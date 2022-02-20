@@ -28,7 +28,6 @@ public class MemberController {
 
     @PostMapping("")
     public ResponseEntity<Member> saveMember(@RequestBody Member member){
-        System.out.println(member.getRole());
         return ResponseEntity.ok().body(memberService.saveMember(member));
     }
 }
