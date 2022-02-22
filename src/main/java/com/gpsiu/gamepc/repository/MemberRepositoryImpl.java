@@ -4,6 +4,7 @@ import com.gpsiu.gamepc.domain.Member;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.List;
@@ -28,24 +29,37 @@ public class MemberRepositoryImpl implements MemberRepository{
 
     @Override
     public Optional<Member> findById(Long id) {
-        return Optional.ofNullable(em.find(Member.class, id));
+        try {
+            return Optional.ofNullable(em.find(Member.class, id));
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Member> findByUsername(String username) {
         TypedQuery<Member> query = em.createQuery("select m from Member m where username = :username", Member.class);
-        return Optional.ofNullable(
-                query.setParameter("username", username)
-                        .getSingleResult()
-        );
+        try {
+            return Optional.ofNullable(
+                    query.setParameter("username", username)
+                            .getSingleResult()
+            );
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
+
     }
 
     @Override
     public Optional<Member> findByName(String name) {
         TypedQuery<Member> query = em.createQuery("select m from Member m where name = :name", Member.class);
-        return Optional.ofNullable(
-                query.setParameter("name", name)
-                        .getSingleResult()
-        );
+        try {
+            return Optional.ofNullable(
+                    query.setParameter("name", name)
+                            .getSingleResult()
+            );
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 }
