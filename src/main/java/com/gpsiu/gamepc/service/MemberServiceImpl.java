@@ -3,6 +3,10 @@ package com.gpsiu.gamepc.service;
 import com.gpsiu.gamepc.domain.Member;
 import com.gpsiu.gamepc.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,11 +16,25 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional
 @Service
-public class MemberServiceImpl implements MemberService{
+public class MemberServiceImpl implements MemberService, UserDetailsService {
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    private final static String USER_NOT_FOUND_MSG = "Username[%s] is not found";
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return memberRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        String.format(USER_NOT_FOUND_MSG, username))
+                );
+    }
 
     @Override
     public Member saveMember(Member member) {
+        String plainPassword = member.getPassword();
+        String cryptPassword = passwordEncoder.encode(plainPassword);
+        member.setPassword(cryptPassword);
         return memberRepository.save(member);
     }
 
