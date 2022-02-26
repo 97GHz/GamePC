@@ -17,3 +17,10 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+
+jwt:
+  header: Authorization
+  # spring-boot-jwt-tutorial-made-by-gpsiu-1q2w#E$R%T
+  secret-key: c3ByaW5nLWJvb3Qtand0LXR1dG9yaWFsLW1hZGUtYnktZ3BzaXUtMXEydyNFJFIlVA==
+  access-token-validity-in-seconds: 1800 # 초 단위
+  refresh-token-validity-in-seconds: 604800
