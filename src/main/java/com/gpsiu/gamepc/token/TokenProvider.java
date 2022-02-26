@@ -99,6 +99,11 @@ public class TokenProvider implements InitializingBean {
         return new UsernamePasswordAuthenticationToken(claims.get("username"), null, authority);
     }
 
+    public String getUsername(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("username").toString();
+    }
+
     private Claims getClaims(String token) {
         try {
             return Jwts
