@@ -33,12 +33,12 @@ public class TokenProvider implements InitializingBean {
 
     public TokenProvider(
             @Value("${jwt.secret-key}") String secretKey,
-            @Value("${jwt.access-token-validity-in-seconds}") Long accessTokenValidityInMilliseconds,
-            @Value("${jwt.refresh-token-validity-in-seconds}") Long refreshTokenValidityInMilliseconds,
+            @Value("${jwt.access-token-validity-in-seconds}") Long accessTokenValidityInSeconds,
+            @Value("${jwt.refresh-token-validity-in-seconds}") Long refreshTokenValidityInSeconds,
             MemberRepository memberRepository) {
         this.secretKey = secretKey;
-        this.accessTokenValidityInMilliseconds = accessTokenValidityInMilliseconds;
-        this.refreshTokenValidityInMilliseconds = refreshTokenValidityInMilliseconds;
+        this.accessTokenValidityInMilliseconds = accessTokenValidityInSeconds * 1000;
+        this.refreshTokenValidityInMilliseconds = refreshTokenValidityInSeconds * 1000;
         this.memberRepository = memberRepository;
     }
 
