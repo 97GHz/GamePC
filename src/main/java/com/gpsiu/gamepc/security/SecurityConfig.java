@@ -4,6 +4,7 @@ import com.gpsiu.gamepc.token.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -43,7 +44,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler);
         http.sessionManagement().sessionCreationPolicy(STATELESS);
-        http.authorizeRequests().antMatchers("/api/**").permitAll();
+        http.authorizeRequests()
+                .antMatchers(HttpMethod.GET,"/api/member/**")
+                .hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
+        http.authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/api/member")
+                .permitAll();
+        http.authorizeRequests()
+                .antMatchers("/api/auth/**")
+                .permitAll();
+        http.authorizeRequests()
+                .anyRequest()
+                .permitAll();
+
         http.addFilterBefore(new JwtAuthorizationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
     }
 }
