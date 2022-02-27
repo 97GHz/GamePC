@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +24,7 @@ import java.util.List;
 public class AuthController {
     private final AuthService authService;
 
+    @PreAuthorize("permitAll()")
     @PostMapping("/login")
     public ResponseEntity<Token> authenticate(@RequestBody Login login){
         return authService.authenticate(login.getUsername(), login.getPassword())
@@ -29,6 +32,7 @@ public class AuthController {
                 .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
+    @PreAuthorize("permitAll()")
     @PostMapping("/reissue")
     public ResponseEntity<Token> reissue(@RequestBody Token token){
         return authService.reissue(token.getRefreshToken())
