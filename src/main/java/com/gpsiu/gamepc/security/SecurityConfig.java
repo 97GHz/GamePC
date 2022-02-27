@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @RequiredArgsConstructor
@@ -34,29 +36,32 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+        auth
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();
-        http.exceptionHandling()
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .accessDeniedHandler(jwtAccessDeniedHandler);
-        http.sessionManagement().sessionCreationPolicy(STATELESS);
-        http.authorizeRequests()
-                .antMatchers(HttpMethod.GET,"/api/member/**")
-                .hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
-        http.authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/api/member")
-                .permitAll();
-        http.authorizeRequests()
-                .antMatchers("/api/auth/**")
-                .permitAll();
-        http.authorizeRequests()
-                .anyRequest()
-                .permitAll();
+        http
+                .csrf().disable()
 
-        http.addFilterBefore(new JwtAuthorizationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler)
+
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(STATELESS)
+
+                .and()
+                .authorizeRequests()
+                .antMatchers(GET, "/api/member/**").hasAnyRole("USER", "ADMIN")
+                .antMatchers(POST, "/api/member").permitAll()
+                .antMatchers("/api/auth/**").permitAll()
+                .anyRequest().permitAll()
+
+                .and()
+                .addFilterBefore(new JwtAuthorizationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
     }
 }
