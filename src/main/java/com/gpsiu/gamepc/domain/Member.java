@@ -8,8 +8,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Setter
 @NoArgsConstructor
@@ -17,6 +19,7 @@ import java.util.Collections;
 public class Member implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "MEMBER_ID")
     private Long id;
 
     @Column(nullable = false)
@@ -27,6 +30,9 @@ public class Member implements UserDetails {
 
     @Column(nullable = false)
     private String name;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<Reservation> reservations = new ArrayList<Reservation>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -40,6 +46,14 @@ public class Member implements UserDetails {
         this.role = role;
     }
 
+    public void addReservation(Reservation reservation) {
+        this.reservations.add(reservation);
+        if (reservation.getMember() != this) {
+            reservation.setMember(this);
+        }
+    }
+
+
     public Long getId() {
         return id;
     }
@@ -50,6 +64,10 @@ public class Member implements UserDetails {
 
     public Role getRole() {
         return role;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
     }
 
     @Override
