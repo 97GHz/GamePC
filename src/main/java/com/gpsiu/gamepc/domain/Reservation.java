@@ -8,10 +8,11 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @Entity
 public class Reservation {
@@ -20,18 +21,43 @@ public class Reservation {
     @Column(name = "RESERVATION_ID")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name="MEMBER_ID")
-    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "PC_ID")
     private Pc pc;
 
-    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "TIMETABLE_ID")
     private Timetable timetable;
 
     @CreationTimestamp
     @Column(nullable = false)
     private LocalDateTime createTime;// = LocalDateTime.now();
+
+    public void setMember(Member member) {
+        this.member = member;
+
+        if(!member.getReservations().contains(this)) {
+            member.getReservations().add(this);
+        }
+    }
+
+    public void setPc(Pc pc) {
+        this.pc = pc;
+
+        if(!pc.getReservations().contains(this)) {
+            pc.getReservations().add(this);
+        }
+    }
+
+    public void setTimetable(Timetable timetable) {
+        this.timetable = timetable;
+
+        if(!timetable.getReservations().contains(this)) {
+            timetable.getReservations().add(this);
+        }
+    }
 }
