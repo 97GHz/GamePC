@@ -43,4 +43,15 @@ public class ReservationRepositoryImpl implements ReservationRepository{
                 .setParameter("date", date)
                 .getResultList();
     }
+
+    @Override
+    public Optional<Reservation> deleteById(Long id) {
+        try{
+            Reservation reservation = em.find(Reservation.class, id);
+            em.remove(reservation);
+            return Optional.ofNullable(reservation);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
+    }
 }

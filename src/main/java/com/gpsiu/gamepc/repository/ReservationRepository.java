@@ -12,4 +12,5 @@ public interface ReservationRepository {
     List<Reservation> findAll();
     Optional<Reservation> findById(Long id);
     List<Reservation> findByDate(Date date);
+    Optional<Reservation> deleteById(Long id);
 }
